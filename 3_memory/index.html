@@ -1,56 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>WASM Import test</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <script src='utils.js'></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="utils.js"></script>
+    <title>Fib</title>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Memory</h1>
-        <div>Your memory instance is <span id="mem"></span> bytes.</div>
-        <div>It has this many pages <span id="pages"></span>.</div>
-        <div>Uint32Buffer[0] = <span id="firstint"></span>.</div>
-        <div>Uint8Buffer[0-4] <span id="firstbytes"></span>.</div>
-    </div>
-    <button id="expand">Expand</button>
-
+    <div id="container"></div>
     <script>
-        function showDetails(mem) {
-            var buf = mem.buffer;
-            var memEl = document.getElementById('mem');
-            var pagesEl = document.getElementById('pages');
-            var firstIntEl = document.getElementById('firstint');
-            var firstBytesEl = document.getElementById('firstbytes');
-            memEl.innerText = buf.byteLength;
-            pagesEl.innerText = buf.byteLength / 65536;
-
-            var i32 = new Uint32Array(buf);
-            var u8 = new Uint8Array(buf);
-
-            firstIntEl.innerText = i32[0];
-            firstBytesEl.innerText = `[${u8[0]}, ${u8[1]}, ${u8[2]}, ${u8[3]}]`
+        var memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
+        var importObject = {
+            js: {
+                mem: memory
+            }
         };
-
-        fetchAndInstantiate('memory.wasm').then(instance => {
-            var mem = instance.export.memory;
-            var button = document.getElementById("expand");
-            button.onclick = () => {
-                try {
-                    mem.grow(1);
-                    showDetails(mem);
-                } catch (re) {
-                    alert("You cannot grow the Memory and more!");
-                };
-            };
-            showDetails(mem);
+        fetchAndInstantiate('memory2.wasm', importObject).then(instance => {
+            var fibNum = 40;
+            instance.exports.fibonacci(fibNum);
+            console.log("calculated")
+            var i32 = new Uint32Array(memory.buffer);
+            var container = document.getElementById('container');
+            for (var i = 0; i < fibNum; i++) {
+                container.innerText += `Fib[${i}]: ${i32[i]}\n`;
+            }
         })
     </script>
-
 </body>
 
 </html>
