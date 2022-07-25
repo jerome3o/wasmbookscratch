@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="utils.js"></script>
+    <title>Fib</title>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        fetchAndInstantiate('homework.wasm', {}).then(instance => {
+            var mem = instance.exports.memory;
+
+            var dv = new DataView(mem.buffer);
+            var nEntries = dv.getUint8(0);
+
+            var container = document.getElementById("container");
+
+            for (var i = 0; i < nEntries; i++) {
+                var start = dv.getUint8(i * 2 + 1);
+                var length = dv.getUint8(i * 2 + 2);
+                var bytes = new Uint8Array(mem.buffer, start, length);
+                var string = new TextDecoder('utf8').decode(bytes);
+
+                var tag = document.createElement('p');
+                var text = document.createTextNode(string);
+                tag.appendChild(text);
+                container.appendChild(tag);
+            }
+        })
+    </script>
+</body>
+
+</html>
