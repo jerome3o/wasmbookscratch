@@ -1,3 +1,3 @@
-clang -c simple.c -o simple.o
-ls -laF simple.*
-nm -a simple.o
+clang simple.c simple_main.c -o simplemain
+ls -laF simple*
+nm -a simplemain
