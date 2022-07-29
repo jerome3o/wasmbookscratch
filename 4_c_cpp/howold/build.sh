@@ -3,3 +3,4 @@
 # wasm-ld couldn't be found otherwise.
 
 clang --target=wasm32 -nostdlib -Wl,--no-entry -Wl,--export-all howold_no_main.c -o howold.wasm
+wasm-objdump -x howold.wasm
